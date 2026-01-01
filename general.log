@@ -1,0 +1,11 @@
+2025-12-31 14:55:56,791 (INFO)- django.utils.autoreload: Watching for file changes with StatReloader
+2025-12-31 15:10:15,603 (INFO)- django.utils.autoreload: C:\Users\user\Documents\storefront\manage.py changed, reloading.
+2025-12-31 15:12:51,170 (INFO)- django.utils.autoreload: Watching for file changes with StatReloader
+2025-12-31 15:13:39,158 (WARNING)- django.request: Unauthorized: /store/collections/
+2025-12-31 15:13:39,172 (WARNING)- django.request: Forbidden: /store/collections/
+2025-12-31 15:13:39,181 (WARNING)- django.request: Bad Request: /store/collections/
+2025-12-31 15:15:07,748 (INFO)- django.utils.autoreload: C:\Users\user\Documents\storefront\storefront\settings\common.py changed, reloading.
+2025-12-31 15:15:18,707 (WARNING)- django.request: Unauthorized: /store/collections/
+2025-12-31 15:15:18,846 (WARNING)- django.request: Forbidden: /store/collections/
+2025-12-31 15:15:19,229 (WARNING)- django.request: Bad Request: /store/collections/
+2026-01-01 12:45:22,815 (INFO)- django.utils.autoreload: Watching for file changes with StatReloader

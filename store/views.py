@@ -7,21 +7,21 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny ,DjangoModelPermissions, IsAdminUser
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework import status
-from .models import Product, Collection, Reviews, OrderItem, Cart, CartItem, Customer, Order
+from .models import Product, Collection, Reviews, OrderItem, Cart, CartItem, Customer, Order, ProductImage
 from .serializers import ProductSerializer,\
     CollectionSerializer, ReviewSerializer, \
     CartSerializer, CartItemSerializer,\
     AddCartItemSerializer, UpdateCartItemSerializer,\
     DeleteCartItemSerializer, CustomerSerializer, \
     OrderSerializer, CreateOrderSerializer,\
-    UpdateOrderSerializer
+    UpdateOrderSerializer, ProductImageSerializer
 from .filters import ProductFilter
 from .pagination import DefaultPagination
 from .permission import IsAdminOrReadOnly, ViewCustomerHistoryPermission 
 
 # Create your views here.
 class ProductViewSet(ModelViewSet):
-    queryset = Product.objects.all() 
+    queryset = Product.objects.prefetch_related('images').all() 
     serializer_class = ProductSerializer
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]       
     filterset_class = ProductFilter
@@ -37,6 +37,16 @@ class ProductViewSet(ModelViewSet):
         if OrderItem.objects.filter(product_id=kwargs['pk']).count() > 0:
             return Response({'error': 'Gusubira ntabwo bikunze'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
         return super().destroy(request, *args, **kwargs)
+    
+class ProductImageViewSet(ModelViewSet):
+    serializer_class = ProductImageSerializer
+    
+    def get_serializer_context(self):
+        return {'product_id': self.kwargs['product_pk']}    
+
+    def get_queryset(self):
+        # Fixed: Query ProductImage objects, not Product objects
+        return ProductImage.objects.filter(product_id=self.kwargs['product_pk'])
 
 class CollectionViewSet(ModelViewSet):
     queryset = Collection.objects.annotate(

@@ -23,6 +23,16 @@ class InventoryFilter(admin.SimpleListFilter):
 
 # Register your models here.
 
+class ProductImageInline(admin.TabularInline):
+    model = models.ProductImage
+    readonly_fields = ['thumbnail']
+
+    def thumbnail(self, instance):
+        if instance.image.name != '':
+            return format_html('<img src="{}" class="thumbnail" />', instance.image.url)
+        return ''
+    thumbnail.short_description = 'Thumbnail'            
+
 @admin.register(models.Product)
 class ProductAdmin(admin.ModelAdmin):
     autocomplete_fields = ['collection']
@@ -30,6 +40,7 @@ class ProductAdmin(admin.ModelAdmin):
         'slug' : ['title']
     }
     actions = ['clear_inventory']  # to add custom action
+    inlines = [ProductImageInline]    
     list_display = ['title', 'unit_price', 'inventory_status','collection_title'] # to show inventory status instead of inventory field
     list_editable = ['unit_price']
     list_per_page = 10
@@ -51,6 +62,10 @@ class ProductAdmin(admin.ModelAdmin):
             f'{updated_count} products were successfully updated.',
             messages.SUCCESS
         )
+    class Media:
+        css = {
+            'all': ['store/style.css']
+        }
 
 @admin.register(models.Customer)
 class CustomerAdmin(admin.ModelAdmin):
@@ -75,7 +90,8 @@ class CustomerAdmin(admin.ModelAdmin):
         return super().get_queryset(request).annotate(
             orders_count=Count('order')  
         )
-    
+
+
 
 @admin.register(models.Collection)
 class CollectionAdmin(admin.ModelAdmin):

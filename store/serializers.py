@@ -2,7 +2,7 @@ from decimal import Decimal
 from rest_framework import serializers
 from django.db import transaction
 from .signals import order_created
-from store.models import Product, Collection, Reviews, Cart, CartItem,Customer, Order,OrderItem
+from store.models import Product, Collection, Reviews, Cart, CartItem,Customer, Order,OrderItem, ProductImage
 
 class CollectionSerializer(serializers.ModelSerializer): 
     class Meta:
@@ -11,12 +11,22 @@ class CollectionSerializer(serializers.ModelSerializer):
     
     product_count = serializers.IntegerField(read_only=True)  
 
+class ProductImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductImage  # Should be ProductImage, not Product
+        fields = ['id', 'image']  # Adjust fields based on your ProductImage model
+    
+    def create(self, validated_data):
+        product_id = self.context['product_id']
+        return ProductImage.objects.create(product_id=product_id, **validated_data)
+
 class ProductSerializer(serializers.ModelSerializer):
     price_with_tax = serializers.SerializerMethodField(method_name="calculate_tax")
-    
+    images = ProductImageSerializer(many=True, read_only=True)
     class Meta:
         model = Product
-        fields = ['id', 'title', 'description', 'slug', 'inventory', 'unit_price', 'price_with_tax', 'collection']
+        fields = ['id', 'title', 'description', 'slug', 'inventory', 
+        'unit_price', 'price_with_tax', 'collection','images']
     
     def calculate_tax(self, product: Product):
         return product.unit_price * Decimal(1.1)
